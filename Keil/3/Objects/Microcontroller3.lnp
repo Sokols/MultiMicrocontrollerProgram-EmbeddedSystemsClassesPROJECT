@@ -1,0 +1,3 @@
+".\Objects\mic3.obj" 
+TO ".\Objects\Microcontroller3" 
+PRINT(".\Listings\Microcontroller3.m51") CODE( 0X0000-0X0FFF )
