@@ -1,1 +1,1 @@
-#include <REGX51.H>
+#include <REGX52.H>
