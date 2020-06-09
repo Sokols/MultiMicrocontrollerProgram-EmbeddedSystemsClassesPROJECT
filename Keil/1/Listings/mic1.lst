@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 18:23:17 PAGE 1   
+C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 22:06:36 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MIC1
@@ -25,161 +25,160 @@ line level    source
   15          // Komendy odbierane
   16          unsigned char code R_COMMAND1[] = "";
   17          
-  18          // Bufory
-  19          unsigned char data SndBuf[MAX_BUF_SIZE] = {0};    
-  20          unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};  
-  21          
-  22          // Licznik dla RcvBuf
-  23          unsigned char data rcvIndex;
-  24          
-  25          /* -----------------ZMIENNE/STALE POZOSTALE----------------- */
-  26          
-  27          // Tablica sprawdzen napiec na liniach klawiatury
-  28          unsigned char code CHECK_LINE[4] = {0xEF, 0xDF, 0xBF, 0x7F};
-  29          
-  30          // Tablica numerow
-  31          unsigned char code NUMBERS[4][3] = {
-  32              0x10, 0x20, 0x30, 
-  33              0x40, 0x50, 0x60,
-  34              0x70, 0x80, 0x90,
-  35              0xA0, 0x00, 0xC0};
-  36              
-  37          // Tablica buforow - dla obu wyswietlaczy
-  38          unsigned char data buf[2];
-  39          
-  40          // Licznik dla CHECK_LINE
-  41          unsigned char data tabIndex;
-  42          
-  43          // Flaga dla diody
-  44          unsigned char data diodeFlag;
-  45              
-  46          /* -----------------FUNKCJE POMOCNICZE----------------- */
-  47              
-  48          extern void delay();
-  49          extern void setDiode();
-  50          extern void handlePressing();
-  51          extern void send(unsigned char);
-  52          extern void updateDisplay();
-  53          extern void Init();
-  54          
-C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 18:23:17 PAGE 2   
+  18          // Bufor odbioru
+  19          unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};  
+  20          
+  21          // Licznik dla RcvBuf
+  22          unsigned char data rcvIndex;
+  23          
+  24          /* -----------------ZMIENNE/STALE POZOSTALE----------------- */
+  25          
+  26          // Tablica sprawdzen napiec na liniach klawiatury
+  27          unsigned char code CHECK_LINE[4] = {0xEF, 0xDF, 0xBF, 0x7F};
+  28          
+  29          // Tablica numerow
+  30          unsigned char code NUMBERS[4][3] = {
+  31              0x10, 0x20, 0x30, 
+  32              0x40, 0x50, 0x60,
+  33              0x70, 0x80, 0x90,
+  34              0xA0, 0x00, 0xC0};
+  35              
+  36          // Tablica buforow - dla obu wyswietlaczy
+  37          unsigned char data buf[2];
+  38          
+  39          // Licznik dla CHECK_LINE
+  40          unsigned char data tabIndex;
+  41          
+  42          // Flaga dla diody
+  43          unsigned char data diodeFlag;
+  44              
+  45          /* -----------------FUNKCJE POMOCNICZE----------------- */
+  46              
+  47          extern void delay();
+  48          extern void setDiode();
+  49          extern void handlePressing();
+  50          extern void send(unsigned char);
+  51          extern void updateDisplay();
+  52          extern void Init();
+  53          
+  54          /* -----------------PRZERWANIA----------------- */
+C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 22:06:36 PAGE 2   
 
-  55          /* -----------------PRZERWANIA----------------- */
-  56          
-  57          // Przerwanie z portu szeregowego - odczyt danych
-  58          void ISR_SERIAL(void) interrupt 4 { 
-  59   1        // program nie obsluguje zadnych komend
-  60   1      } 
-  61          
-  62          /* -----------------PROGRAM GLOWNY----------------- */
-  63          
-  64          void main(void) {
-  65   1      
-  66   1        Init();
-  67   1        
-  68   1        while(TRUE) {
-  69   2          P2 = CHECK_LINE[tabIndex];
-  70   2          
-  71   2          if (P2 != CHECK_LINE[tabIndex]) {
-  72   3            setDiode();
-  73   3            handlePressing();
-  74   3            updateDisplay();
-  75   3          }
-  76   2          if (++tabIndex == 4) { tabIndex = 0; }
-  77   2          delay();
-  78   2        }
-  79   1      }
-  80          
-  81          /* -----------------CIALA FUNKCJI POMOCNICZYCH----------------- */
-  82              
-  83          // Funkcja opozniajaca odczytywanie wcisnietych wartosci
-  84          void delay(void) {
-  85   1        int x = 0, y = 0;
-  86   1        for (x; x < X; x++) {
-  87   2          for (y; y < Y; y++) {;}
-  88   2        }
-  89   1      }
-  90          
-  91          // Funkcja gaszaca/zapalajaca diode
-  92          void setDiode(void) {
-  93   1        diodeFlag = !diodeFlag;
-  94   1        P0_0 = diodeFlag;
-  95   1      }
-  96          
-  97          // Funkcja aktualizujaca bufory po wykryciu wcisniecia przycisku
-  98          void handlePressing(void) {
-  99   1        
- 100   1        // Klawisz * - nic nie rob
- 101   1        if (P2_3 == 0 && P2_7 == 0) { ;; }
- 102   1        
- 103   1        // Klawisz # - wyzeruj bufory
- 104   1        else if (P2_1 == 0 && P2_7 == 0) {
- 105   2          buf[0] = 0x00;
- 106   2          buf[1] = 0x00;
- 107   2        } 
- 108   1        
- 109   1        // Klawisze cyfr - przypisz do buforow
- 110   1        else {
- 111   2          buf[1] = buf[0];        
- 112   2          // przypisanie cyfry z 1. kolumny
- 113   2          if (P2_3 == 0) { buf[0] = NUMBERS[tabIndex][0]; }
- 114   2          // przypisanie cyfry z 2. kolumny
- 115   2          else if (P2_2 == 0) { buf[0] = NUMBERS[tabIndex][1]; }
- 116   2          // przypisanie cyfry z 3. kolumny
-C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 18:23:17 PAGE 3   
+  55          
+  56          // Przerwanie z portu szeregowego - odczyt danych
+  57          void ISR_SERIAL(void) interrupt 4 { 
+  58   1        // program nie obsluguje zadnych komend
+  59   1      } 
+  60          
+  61          /* -----------------PROGRAM GLOWNY----------------- */
+  62          
+  63          void main(void) {
+  64   1      
+  65   1        Init();
+  66   1        
+  67   1        while(TRUE) {
+  68   2          P2 = CHECK_LINE[tabIndex];
+  69   2          
+  70   2          if (P2 != CHECK_LINE[tabIndex]) {
+  71   3            setDiode();
+  72   3            handlePressing();
+  73   3            updateDisplay();
+  74   3          }
+  75   2          if (++tabIndex == 4) { tabIndex = 0; }
+  76   2          delay();
+  77   2        }
+  78   1      }
+  79          
+  80          /* -----------------CIALA FUNKCJI POMOCNICZYCH----------------- */
+  81              
+  82          // Funkcja opozniajaca odczytywanie wcisnietych wartosci
+  83          void delay(void) {
+  84   1        int x = 0, y = 0;
+  85   1        for (x; x < X; x++) {
+  86   2          for (y; y < Y; y++) {;}
+  87   2        }
+  88   1      }
+  89          
+  90          // Funkcja gaszaca/zapalajaca diode
+  91          void setDiode(void) {
+  92   1        diodeFlag = !diodeFlag;
+  93   1        P0_0 = diodeFlag;
+  94   1      }
+  95          
+  96          // Funkcja aktualizujaca bufory po wykryciu wcisniecia przycisku
+  97          void handlePressing(void) {
+  98   1        
+  99   1        // Klawisz * - nic nie rob
+ 100   1        if (P2_3 == 0 && P2_7 == 0) { ;; }
+ 101   1        
+ 102   1        // Klawisz # - wyzeruj bufory
+ 103   1        else if (P2_1 == 0 && P2_7 == 0) {
+ 104   2          buf[0] = 0x00;
+ 105   2          buf[1] = 0x00;
+ 106   2        } 
+ 107   1        
+ 108   1        // Klawisze cyfr - przypisz do buforow
+ 109   1        else {
+ 110   2          buf[1] = buf[0];        
+ 111   2          // przypisanie cyfry z 1. kolumny
+ 112   2          if (P2_3 == 0) { buf[0] = NUMBERS[tabIndex][0]; }
+ 113   2          // przypisanie cyfry z 2. kolumny
+ 114   2          else if (P2_2 == 0) { buf[0] = NUMBERS[tabIndex][1]; }
+ 115   2          // przypisanie cyfry z 3. kolumny
+ 116   2          else { buf[0] = NUMBERS[tabIndex][2]; }
+C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 22:06:36 PAGE 3   
 
- 117   2          else { buf[0] = NUMBERS[tabIndex][2]; }
- 118   2        }
- 119   1      }
- 120          
- 121          // Funkcja wysylajaca dany znak przez magistrale
- 122          void send(unsigned char value) {
- 123   1        SERIAL_MODE = 1;              // tryb nadawania
- 124   1        ES = 0;                       // wylaczenie nasluchu odbierania danych
- 125   1        TI = 0;                       
- 126   1        SBUF = value;                 // zaladuj znak do bufora
- 127   1        while(TI == 0); 
- 128   1        TI = 0;
- 129   1        ES = 1;                       // ponowne wlaczenie nasluchu odbierania danych
- 130   1        SERIAL_MODE = 0;              // tryb odbioru
- 131   1      }
- 132          
- 133          // Funkcja wysylajaca aktualne bufory do 2. mikrokontrolera
- 134          void updateDisplay(void) {
- 135   1        unsigned char i = 0;
- 136   1        unsigned char commandSize = strlen(B_COMMAND1);
- 137   1        for (i; i < commandSize; i++) {
- 138   2          if (i == (commandSize - 3)) {
- 139   3            send(buf[0]);
- 140   3          } else if (i == (commandSize - 2)) {
- 141   3            send(buf[1]);
- 142   3          } else {
- 143   3            send(B_COMMAND1[i]);
- 144   3          }
- 145   2        }
- 146   1      }
- 147          
- 148          // Funkcja inicjujaca
- 149          void Init(void) {
- 150   1        
- 151   1        // USTAWIENIA OGOLNE
- 152   1        SERIAL_MODE = 0;          // przejdz w tryb odbioru
- 153   1        rcvIndex = 0;             // licznik bufora odbioru na 0
- 154   1        SCON = 0x50;              // konfiguracja portu szeregowego
- 155   1        RCAP2L = TL2 = 0xDC;      // konfiguracja predkosci nadawania i odbioru 
- 156   1        RCAP2H = TH2 = 0xFF;      // danych przez port szeregowy
- 157   1        T2CON = 0x30;             // konfiguracja Timera 2 
- 158   1        RI = TI = 0;              // gaszenie flag odbiornika i nadajnika
- 159   1        ES  = 1;                  // wlacz przerwania z portu szeregowego
- 160   1        EA  = 1;                  // wlacz maske przerwan
- 161   1        TR2 = 1;                  // timer 2 => ON taktowanie portu szeregowego
- 162   1        
- 163   1        // USTAWIENIA POZOSTALE
- 164   1        buf[0] = 0x00;
- 165   1        buf[1] = 0x00;
- 166   1        diodeFlag = 1;
- 167   1        tabIndex = 0;
- 168   1      }
+ 117   2        }
+ 118   1      }
+ 119          
+ 120          // Funkcja wysylajaca dany znak przez magistrale
+ 121          void send(unsigned char value) {
+ 122   1        SERIAL_MODE = 1;              // tryb nadawania
+ 123   1        ES = 0;                       // wylaczenie nasluchu odbierania danych
+ 124   1        TI = 0;                       
+ 125   1        SBUF = value;                 // zaladuj znak do bufora
+ 126   1        while(TI == 0); 
+ 127   1        TI = 0;
+ 128   1        ES = 1;                       // ponowne wlaczenie nasluchu odbierania danych
+ 129   1        SERIAL_MODE = 0;              // tryb odbioru
+ 130   1      }
+ 131          
+ 132          // Funkcja wysylajaca aktualne bufory do 2. mikrokontrolera
+ 133          void updateDisplay(void) {
+ 134   1        unsigned char i = 0;
+ 135   1        unsigned char commandLength = strlen(B_COMMAND1);
+ 136   1        for (i; i < commandLength; i++) {
+ 137   2          if (i == (commandLength - 3)) {
+ 138   3            send(buf[0]);
+ 139   3          } else if (i == (commandLength - 2)) {
+ 140   3            send(buf[1]);
+ 141   3          } else {
+ 142   3            send(B_COMMAND1[i]);
+ 143   3          }
+ 144   2        }
+ 145   1      }
+ 146          
+ 147          // Funkcja inicjujaca
+ 148          void Init(void) {
+ 149   1        
+ 150   1        // USTAWIENIA OGOLNE
+ 151   1        SERIAL_MODE = 0;          // przejdz w tryb odbioru
+ 152   1        rcvIndex = 0;             // licznik bufora odbioru na 0
+ 153   1        SCON = 0x50;              // konfiguracja portu szeregowego
+ 154   1        RCAP2L = TL2 = 0xDC;      // konfiguracja predkosci nadawania i odbioru 
+ 155   1        RCAP2H = TH2 = 0xFF;      // danych przez port szeregowy
+ 156   1        T2CON = 0x30;             // konfiguracja Timera 2 
+ 157   1        RI = TI = 0;              // gaszenie flag odbiornika i nadajnika
+ 158   1        ES  = 1;                  // wlacz przerwania z portu szeregowego
+ 159   1        EA  = 1;                  // wlacz maske przerwan
+ 160   1        TR2 = 1;                  // timer 2 => ON taktowanie portu szeregowego
+ 161   1        
+ 162   1        // USTAWIENIA POZOSTALE
+ 163   1        buf[0] = 0x00;
+ 164   1        buf[1] = 0x00;
+ 165   1        diodeFlag = 1;
+ 166   1        tabIndex = 0;
+ 167   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
@@ -187,12 +186,12 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    CONSTANT SIZE    =     31    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     45       1
+   DATA SIZE        =     25       1
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
-C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 18:23:17 PAGE 4   
-
 END OF MODULE INFORMATION.
+
+C51 COMPILER V9.60.0.0   MIC1                                                              06/09/2020 22:06:36 PAGE 4   
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

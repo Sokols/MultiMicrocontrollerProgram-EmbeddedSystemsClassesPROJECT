@@ -15,8 +15,7 @@ unsigned char code B_COMMAND1[] = "<2_display12>";
 // Komendy odbierane
 unsigned char code R_COMMAND1[] = "";
 
-// Bufory
-unsigned char data SndBuf[MAX_BUF_SIZE] = {0};		
+// Bufor odbioru
 unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};	
 
 // Licznik dla RcvBuf
@@ -133,11 +132,11 @@ void send(unsigned char value) {
 // Funkcja wysylajaca aktualne bufory do 2. mikrokontrolera
 void updateDisplay(void) {
 	unsigned char i = 0;
-	unsigned char commandSize = strlen(B_COMMAND1);
-	for (i; i < commandSize; i++) {
-		if (i == (commandSize - 3)) {
+	unsigned char commandLength = strlen(B_COMMAND1);
+	for (i; i < commandLength; i++) {
+		if (i == (commandLength - 3)) {
 			send(buf[0]);
-		} else if (i == (commandSize - 2)) {
+		} else if (i == (commandLength - 2)) {
 			send(buf[1]);
 		} else {
 			send(B_COMMAND1[i]);
