@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/10/2020  01:05:23  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/19/2020  01:48:05  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
@@ -12,7 +12,7 @@ MEMORY MODEL: SMALL
 INPUT MODULES INCLUDED:
   .\Objects\mic2.obj (MIC2)
   C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
-  C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (STRLEN)
+  C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (STRNCMP)
   C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (?C_INIT)
   C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (?C?CLDPTR)
 
@@ -26,14 +26,8 @@ LINK MAP OF MODULE:  .\Objects\Microcontroller2 (MIC2)
             * * * * * * *   D A T A   M E M O R Y   * * * * * * *
             REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
             DATA    0008H     0017H     UNIT         ?DT?MIC2
-            DATA    001FH     0002H     UNIT         ?DT?EXECUTECOMMAND?MIC2
-            IDATA   0021H     0001H     UNIT         ?STACK
-
-            * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
-                    0000H     FD00H                  *** GAP ***
-            XDATA   FD00H     0001H     ABSOLUTE     
-                    FD01H     00FFH                  *** GAP ***
-            XDATA   FE00H     0001H     ABSOLUTE     
+            DATA    001FH     0008H     UNIT         _DATA_GROUP_
+            IDATA   0027H     0001H     UNIT         ?STACK
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
@@ -42,36 +36,51 @@ LINK MAP OF MODULE:  .\Objects\Microcontroller2 (MIC2)
             CODE    0023H     0003H     ABSOLUTE     
                     0026H     07DAH                  *** GAP ***
             CODE    0800H     008CH     UNIT         ?C_C51STARTUP
-            CODE    088CH     0059H     UNIT         ?PR?EXECUTECOMMAND?MIC2
-            CODE    08E5H     002CH     UNIT         ?PR?INIT?MIC2
-            CODE    0911H     0023H     UNIT         ?PR?DELAY?MIC2
-            CODE    0934H     001DH     UNIT         ?PR?MAIN?MIC2
-            CODE    0951H     001DH     UNIT         ?PR?CLEARRCVBUF?MIC2
-            CODE    096EH     0019H     UNIT         ?CO?MIC2
-            CODE    0987H     0019H     UNIT         ?C?LIB_CODE
-            CODE    09A0H     0017H     UNIT         ?C_INITSEG
-            CODE    09B7H     0015H     UNIT         ?PR?_STRLEN?STRLEN
-            CODE    09CCH     0012H     UNIT         ?PR?_SEND?MIC2
-            CODE    09DEH     0003H     UNIT         ?PR?ISR_INT0?MIC2
-            CODE    09E1H     0003H     UNIT         ?PR?ISR_SERIAL?MIC2
+            CODE    088CH     006FH     UNIT         ?PR?_STRNCMP?STRNCMP
+            CODE    08FBH     006CH     UNIT         ?PR?ISR_SERIAL?MIC2
+            CODE    0967H     003BH     UNIT         ?PR?EXECUTECOMMAND?MIC2
+            CODE    09A2H     002EH     UNIT         ?PR?INIT?MIC2
+            CODE    09D0H     0029H     UNIT         ?PR?DISPLAY?MIC2
+            CODE    09F9H     001DH     UNIT         ?PR?CLEARRCVBUF?MIC2
+            CODE    0A16H     0019H     UNIT         ?CO?MIC2
+            CODE    0A2FH     0019H     UNIT         ?C?LIB_CODE
+            CODE    0A48H     0017H     UNIT         ?C_INITSEG
+            CODE    0A5FH     0012H     UNIT         ?PR?_SEND?MIC2
+            CODE    0A71H     0008H     UNIT         ?PR?MAIN?MIC2
+            CODE    0A79H     0007H     UNIT         ?PR?ISR_INT0?MIC2
 
 
 
 OVERLAY MAP OF MODULE:   .\Objects\Microcontroller2 (MIC2)
 
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:23  PAGE 2
+
+SEGMENT                           DATA_GROUP 
+  +--> CALLED SEGMENT           START    LENGTH
+-----------------------------------------------
+?PR?ISR_SERIAL?MIC2             -----    -----
+  +--> ?PR?CLEARRCVBUF?MIC2
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:48:05  PAGE 2
 
 
+  +--> ?PR?EXECUTECOMMAND?MIC2
 
-SEGMENT
-  +--> CALLED SEGMENT
----------------------
-?C_C51STARTUP
+?PR?EXECUTECOMMAND?MIC2         -----    -----
+  +--> ?CO?MIC2
+  +--> ?PR?_STRNCMP?STRNCMP
+
+?PR?_STRNCMP?STRNCMP            001FH    0008H
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP                   -----    -----
   +--> ?PR?MAIN?MIC2
   +--> ?C_INITSEG
 
-?PR?MAIN?MIC2
+?PR?MAIN?MIC2                   -----    -----
   +--> ?PR?INIT?MIC2
+  +--> ?PR?DISPLAY?MIC2
+
+?PR?DISPLAY?MIC2                -----    -----
   +--> ?CO?MIC2
 
 
@@ -83,169 +92,170 @@ SYMBOL TABLE OF MODULE:  .\Objects\Microcontroller2 (MIC2)
 
   -------         MODULE        MIC2
   C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
   B:00A8H.7       PUBLIC        EA
-  C:09E1H         PUBLIC        ISR_SERIAL
-  C:0911H         PUBLIC        delay
-  C:08E5H         PUBLIC        Init
+  C:08FBH         PUBLIC        ISR_SERIAL
+  B:00A0H.0       PUBLIC        P2_0
+  B:00A0H.1       PUBLIC        P2_1
+  C:09A2H         PUBLIC        Init
   B:00B0H.4       PUBLIC        P3_4
   B:00A8H.4       PUBLIC        ES
   B:0098H.0       PUBLIC        RI
   B:0098H.1       PUBLIC        TI
-  C:097DH         PUBLIC        NUMBERS
-  X:FD00H         PUBLIC        right
+  C:0A25H         PUBLIC        NUMBERS
   D:00CBH         PUBLIC        RCAP2H
   D:00CAH         PUBLIC        RCAP2L
-  C:0934H         PUBLIC        main
-  C:09CCH         PUBLIC        _send
-  X:FE00H         PUBLIC        left
+  C:0A71H         PUBLIC        main
+  C:0A5FH         PUBLIC        _send
   D:0099H         PUBLIC        SBUF
   D:0098H         PUBLIC        SCON
-  C:088CH         PUBLIC        executeCommand
-  D:0008H         PUBLIC        buf
-  D:000AH         PUBLIC        rcvIndex
+  C:0967H         PUBLIC        executeCommand
+  D:0008H         PUBLIC        rcvIndex
+  D:0009H         PUBLIC        counterD
   B:00A8H.0       PUBLIC        EX0
   B:0088H.0       PUBLIC        IT0
   D:00CDH         PUBLIC        TH2
+  D:000AH         PUBLIC        counterJ
   D:00CCH         PUBLIC        TL2
-  C:096EH         PUBLIC        B_COMMAND1
-  C:0951H         PUBLIC        clearRcvBuf
+  C:0A16H         PUBLIC        B_COMMAND1
+  C:09F9H         PUBLIC        clearRcvBuf
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:48:05  PAGE 3
+
+
   B:00C8H.2       PUBLIC        TR2
-  C:096FH         PUBLIC        R_COMMAND1
+  C:0A17H         PUBLIC        R_COMMAND1
   D:00C8H         PUBLIC        T2CON
-  C:09DEH         PUBLIC        ISR_INT0
+  C:0A79H         PUBLIC        ISR_INT0
   D:000BH         PUBLIC        rcvBuf
+  C:09D0H         PUBLIC        display
   -------         PROC          ISR_INT0
-  C:09DEH         LINE#         47
-  C:09DEH         LINE#         49
-  C:09E0H         LINE#         50
+  C:0A79H         LINE#         44
+  C:0A79H         LINE#         45
+  C:0A7CH         LINE#         46
+  C:0A7FH         LINE#         47
   -------         ENDPROC       ISR_INT0
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:23  PAGE 3
-
-
   -------         PROC          ISR_SERIAL
-  C:09E1H         LINE#         53
-  C:09E1H         LINE#         55
-  C:09E1H         LINE#         67
-  C:09E1H         LINE#         68
-  C:09E3H         LINE#         69
+  C:08FBH         LINE#         50
+  C:0918H         LINE#         51
+  C:091BH         LINE#         52
+  C:0920H         LINE#         53
+  C:0923H         LINE#         54
+  C:0923H         LINE#         55
+  C:093AH         LINE#         56
+  C:0942H         LINE#         57
+  C:0947H         LINE#         58
+  C:094AH         LINE#         59
+  C:094AH         LINE#         60
+  C:094AH         LINE#         61
+  C:094AH         LINE#         62
+  C:094CH         LINE#         63
   -------         ENDPROC       ISR_SERIAL
   -------         PROC          MAIN
-  C:0934H         LINE#         73
-  C:0934H         LINE#         75
-  C:0937H         LINE#         77
-  C:0937H         LINE#         78
-  C:0945H         LINE#         79
-  C:094FH         LINE#         80
+  C:0A71H         LINE#         68
+  C:0A71H         LINE#         70
+  C:0A74H         LINE#         72
+  C:0A74H         LINE#         73
+  C:0A77H         LINE#         74
   -------         ENDPROC       MAIN
   -------         PROC          EXECUTECOMMAND
-  -------         DO            
-  D:001FH         SYMBOL        i
-  D:0007H         SYMBOL        bufLength
-  D:0020H         SYMBOL        correctFlag
-  -------         ENDDO         
-  C:088CH         LINE#         86
-  C:088CH         LINE#         88
-  C:088FH         LINE#         89
-  C:0890H         LINE#         90
-  C:0893H         LINE#         93
-  C:089BH         LINE#         94
-  C:08A7H         LINE#         95
-  C:08ADH         LINE#         96
-  C:08B5H         LINE#         97
-  C:08BDH         LINE#         98
-  C:08C5H         LINE#         99
-  C:08D7H         LINE#         101
-  C:08D7H         LINE#         102
-  C:08DAH         LINE#         103
-  C:08DAH         LINE#         104
-  C:08DCH         LINE#         105
-  C:08DEH         LINE#         106
-  C:08E1H         LINE#         107
-  C:08E4H         LINE#         108
+  C:0967H         LINE#         80
+  C:0967H         LINE#         83
+  C:0988H         LINE#         84
+  C:098EH         LINE#         85
+  C:0990H         LINE#         86
+  C:0992H         LINE#         87
+  C:0995H         LINE#         88
+  C:0995H         LINE#         90
+  C:099BH         LINE#         91
+  C:099DH         LINE#         92
+  C:099EH         LINE#         93
+  C:09A1H         LINE#         94
+  C:09A1H         LINE#         95
+  C:09A1H         LINE#         96
   -------         ENDPROC       EXECUTECOMMAND
   -------         PROC          CLEARRCVBUF
-  C:0951H         LINE#         111
-  C:0951H         LINE#         112
-  C:0954H         LINE#         113
-  C:095FH         LINE#         114
-  C:0966H         LINE#         115
-  C:096AH         LINE#         116
-  C:096DH         LINE#         117
+  C:09F9H         LINE#         99
+  C:09F9H         LINE#         100
+  C:09FCH         LINE#         101
+  C:0A07H         LINE#         102
+  C:0A0EH         LINE#         103
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:48:05  PAGE 4
+
+
+  C:0A12H         LINE#         104
+  C:0A15H         LINE#         105
   -------         ENDPROC       CLEARRCVBUF
-  -------         PROC          DELAY
+  -------         PROC          DISPLAY
   -------         DO            
-  D:0006H         SYMBOL        x
-  D:0004H         SYMBOL        y
+  D:0007H         SYMBOL        i
   -------         ENDDO         
-  C:0911H         LINE#         120
-  C:0911H         LINE#         121
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:23  PAGE 4
-
-
-  C:0916H         LINE#         122
-  C:0916H         LINE#         123
-  C:0928H         LINE#         124
-  C:0933H         LINE#         125
-  -------         ENDPROC       DELAY
+  C:09D0H         LINE#         108
+  C:09D0H         LINE#         109
+  C:09D2H         LINE#         110
+  C:09DCH         LINE#         112
+  C:09DEH         LINE#         113
+  C:09E0H         LINE#         114
+  C:09E8H         LINE#         115
+  C:09EAH         LINE#         116
+  C:09ECH         LINE#         117
+  C:09F1H         LINE#         118
+  C:09F3H         LINE#         119
+  C:09F5H         LINE#         120
+  C:09F8H         LINE#         121
+  -------         ENDPROC       DISPLAY
   -------         PROC          _SEND
   D:0007H         SYMBOL        value
-  C:09CCH         LINE#         128
-  C:09CCH         LINE#         129
-  C:09CEH         LINE#         130
-  C:09D0H         LINE#         131
-  C:09D2H         LINE#         132
-  C:09D4H         LINE#         133
-  C:09D7H         LINE#         134
-  C:09D9H         LINE#         135
-  C:09DBH         LINE#         136
-  C:09DDH         LINE#         137
+  C:0A5FH         LINE#         125
+  C:0A5FH         LINE#         126
+  C:0A61H         LINE#         127
+  C:0A63H         LINE#         128
+  C:0A65H         LINE#         129
+  C:0A67H         LINE#         130
+  C:0A6AH         LINE#         131
+  C:0A6CH         LINE#         132
+  C:0A6EH         LINE#         133
+  C:0A70H         LINE#         134
   -------         ENDPROC       _SEND
   -------         PROC          INIT
-  C:08E5H         LINE#         140
-  C:08E5H         LINE#         143
-  C:08E7H         LINE#         144
-  C:08EAH         LINE#         145
-  C:08EDH         LINE#         146
-  C:08F0H         LINE#         147
-  C:08F6H         LINE#         148
-  C:08FCH         LINE#         149
-  C:08FEH         LINE#         150
-  C:0902H         LINE#         151
-  C:0904H         LINE#         152
-  C:0906H         LINE#         153
-  C:0908H         LINE#         154
-  C:090AH         LINE#         157
-  C:090DH         LINE#         158
-  C:0910H         LINE#         159
+  C:09A2H         LINE#         137
+  C:09A2H         LINE#         140
+  C:09A4H         LINE#         141
+  C:09A7H         LINE#         142
+  C:09AAH         LINE#         143
+  C:09ADH         LINE#         144
+  C:09B3H         LINE#         145
+  C:09B9H         LINE#         146
+  C:09BBH         LINE#         147
+  C:09BFH         LINE#         148
+  C:09C1H         LINE#         149
+  C:09C3H         LINE#         150
+  C:09C5H         LINE#         151
+  C:09C7H         LINE#         154
+  C:09C9H         LINE#         155
+  C:09CBH         LINE#         156
+  C:09CDH         LINE#         157
+  C:09CFH         LINE#         158
   -------         ENDPROC       INIT
   -------         ENDMOD        MIC2
 
-  -------         MODULE        STRLEN
-  C:09B7H         PUBLIC        _STRLEN
-  -------         ENDMOD        STRLEN
+  -------         MODULE        STRNCMP
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:48:05  PAGE 5
+
+
+  D:001FH         PUBLIC        ?_strncmp?BYTE
+  C:088CH         PUBLIC        _strncmp
+  -------         ENDMOD        STRNCMP
 
   -------         MODULE        ?C?CLDPTR
-  C:0987H         PUBLIC        ?C?CLDPTR
+  C:0A2FH         PUBLIC        ?C?CLDPTR
   -------         ENDMOD        ?C?CLDPTR
 
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?EXECUTECOMMAND?MIC2
-
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?CLEARRCVBUF?MIC2
-
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?DELAY?MIC2
-
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_SEND?MIC2
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:23  PAGE 5
-
-
 
 ******************************************************************************
-* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 012FH BYTE (14%) *
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0171H BYTE (18%) *
 ******************************************************************************
 
-Program Size: data=34.0 xdata=2 code=493
-LINK/LOCATE RUN COMPLETE.  4 WARNING(S),  0 ERROR(S)
+Program Size: data=40.0 xdata=0 code=649
+LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)

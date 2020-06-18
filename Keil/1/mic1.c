@@ -4,19 +4,20 @@
 #define TRUE 1
 #define SERIAL_MODE P3_4	// 0 odbiór, 1 nadawanie
 #define MAX_BUF_SIZE 20		// max rozmiar bufora
-#define X 500							// parametry dla funkcji delay
-#define Y 500
+#define X 100							// parametry dla funkcji delay
+#define Y 200
 
 /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
 
 // Komendy nadajace
-unsigned char code B_COMMAND1[] = "<2_display12>";
+unsigned char code B_COMMAND1[] = "<2_display&*>";
 
 // Komendy odbierane
 unsigned char code R_COMMAND1[] = "";
 
-// Bufor odbioru
-unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};	
+// Bufor odbioru i nadawania
+unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};
+unsigned char data SndBuf[MAX_BUF_SIZE] = {0};
 
 // Licznik dla RcvBuf
 unsigned char data rcvIndex;
@@ -28,10 +29,10 @@ unsigned char code CHECK_LINE[4] = {0xEF, 0xDF, 0xBF, 0x7F};
 
 // Tablica numerow
 unsigned char code NUMBERS[4][3] = {
-		0x10, 0x20, 0x30, 
-		0x40, 0x50, 0x60,
-		0x70, 0x80, 0x90,
-		0xA0, 0x00, 0xC0};
+		0x01, 0x02, 0x03, 
+		0x04, 0x05, 0x06,
+		0x07, 0x08, 0x09,
+		0x0A, 0x0A, 0x0A};
 		
 // Tablica buforow - dla obu wyswietlaczy
 unsigned char data buf[2];
@@ -44,12 +45,12 @@ unsigned char data diodeFlag;
 		
 /* -----------------FUNKCJE POMOCNICZE----------------- */
 		
-extern void delay();
-extern void setDiode();
-extern void handlePressing();
-extern void send(unsigned char);
-extern void updateDisplay();
-extern void Init();
+void delay();
+void setDiode();
+void handlePressing();
+void send(unsigned char);
+void updateDisplay();
+void Init();
 
 /* -----------------PRZERWANIA----------------- */
 
@@ -72,7 +73,9 @@ void main(void) {
 			handlePressing();
 			updateDisplay();
 		}
-		if (++tabIndex == 4) { tabIndex = 0; }
+		if (++tabIndex == 4) { 
+			tabIndex = 0; 
+		}
 		delay();
 	}
 }
@@ -101,8 +104,8 @@ void handlePressing(void) {
 	
 	// Klawisz # - wyzeruj bufory
 	else if (P2_1 == 0 && P2_7 == 0) {
-		buf[0] = 0x00;
-		buf[1] = 0x00;
+		buf[0] = 0;
+		buf[1] = 0;
 	} 
 	
 	// Klawisze cyfr - przypisz do buforow
@@ -131,16 +134,22 @@ void send(unsigned char value) {
 
 // Funkcja wysylajaca aktualne bufory do 2. mikrokontrolera
 void updateDisplay(void) {
+
 	unsigned char i = 0;
 	unsigned char commandLength = strlen(B_COMMAND1);
 	for (i; i < commandLength; i++) {
-		if (i == (commandLength - 3)) {
-			send(buf[0]);
-		} else if (i == (commandLength - 2)) {
-			send(buf[1]);
+		if (B_COMMAND1[i] == '&') {
+			SndBuf[i] = buf[0];
+		} else if (B_COMMAND1[i] == '*') {
+			SndBuf[i] = buf[1];
 		} else {
-			send(B_COMMAND1[i]);
+			SndBuf[i] = B_COMMAND1[i];
 		}
+	}
+	i = 0;
+	for (i; i < commandLength; i++) {
+		send(SndBuf[i]);
+		SndBuf[i] = 0;
 	}
 }
 
@@ -160,8 +169,8 @@ void Init(void) {
 	TR2 = 1; 									// timer 2 => ON taktowanie portu szeregowego
 	
 	// USTAWIENIA POZOSTALE
-	buf[0] = 0x00;
-	buf[1] = 0x00;
+	buf[0] = 0;
+	buf[1] = 0;
 	diodeFlag = 1;
 	tabIndex = 0;
 }

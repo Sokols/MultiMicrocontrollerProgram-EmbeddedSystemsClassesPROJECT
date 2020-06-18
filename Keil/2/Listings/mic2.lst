@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MIC2                                                              06/10/2020 01:05:23 PAGE 1   
+C51 COMPILER V9.60.0.0   MIC2                                                              06/19/2020 01:48:05 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MIC2
@@ -14,171 +14,170 @@ line level    source
    4          #define TRUE 1
    5          #define SERIAL_MODE P3_4  // 0 odbiór, 1 nadawanie
    6          #define MAX_BUF_SIZE 20   // max rozmiar bufora
-   7          #define X 200             // parametry dla funkcji delay
-   8          #define Y 200
-   9          #define POWER_LEFT P2_0
-  10          #define POWER_RIGHT P2_1
+   7          #define POWER_LEFT P2_0
+   8          #define POWER_RIGHT P2_1
+   9          
+  10          /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
   11          
-  12          /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
-  13          
-  14          // Komendy nadajace
-  15          unsigned char code B_COMMAND1[] = "";
-  16          
-  17          // Komendy odbierane
-  18          unsigned char code R_COMMAND1[] = "<2_display12>";
-  19          
-  20          // Bufor odbioru
-  21          unsigned char data rcvBuf[MAX_BUF_SIZE] = {0};  
-  22          
-  23          // Licznik dla RcvBuf
-  24          unsigned char data rcvIndex;
+  12          // Komendy nadajace
+  13          unsigned char code B_COMMAND1[] = "";
+  14          
+  15          // Komendy odbierane
+  16          unsigned char code R_COMMAND1[] = "<2_display12>";
+  17          
+  18          // Bufor odbioru
+  19          unsigned char data rcvBuf[MAX_BUF_SIZE] = {0};  
+  20          
+  21          // Licznik dla RcvBuf
+  22          unsigned char data rcvIndex;
+  23          
+  24          /* -----------------ZMIENNE/STALE POZOSTALE----------------- */
   25          
-  26          /* -----------------ZMIENNE/STALE POZOSTALE----------------- */
-  27          
-  28          // Tablica buforow - dla obu wyswietlaczy
-  29          unsigned char data buf[2];
-  30          
-  31          // Tablica cyfr 0 - 9
-  32          unsigned char code NUMBERS[] = {0xBF, 0x86, 0xDB, 0xCF, 0xE6, 0xED, 0xFD, 0x87, 0xFF, 0xEF};
-  33          
-  34          unsigned char xdata right _at_ 0xFD00;
-  35          unsigned char xdata left _at_ 0xFE00;
-  36            
-  37          /* -----------------FUNKCJE POMOCNICZE----------------- */
-  38          
-  39          extern void executeCommand();
-  40          extern void clearRcvBuf();
-  41          extern void delay();
-  42          extern void send(unsigned char);
-  43          extern void Init();
-  44          
-  45          /* -----------------PRZERWANIA----------------- */
-  46          
-  47          void ISR_INT0(void) interrupt 0
-  48            {
-  49   1          rcvIndex++;
-  50   1        }
-  51          
-  52          // Przerwanie z portu szeregowego - odczyt danych
-  53          void ISR_SERIAL(void) interrupt 4 { 
-  54   1        
-C51 COMPILER V9.60.0.0   MIC2                                                              06/10/2020 01:05:23 PAGE 2   
+  26          // Tablica cyfr 0 - 9
+  27          unsigned char code NUMBERS[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+  28          
+  29          
+  30          // Zmienne dla wyswietlanych wartosci
+  31          unsigned char data counterD;
+  32          unsigned char data counterJ;
+  33            
+  34          /* -----------------FUNKCJE POMOCNICZE----------------- */
+  35          
+  36          void executeCommand();
+  37          void clearRcvBuf();
+  38          void display();
+  39          void send(unsigned char);
+  40          void Init();
+  41          
+  42          /* -----------------PRZERWANIA----------------- */
+  43          
+  44          void ISR_INT0(void) interrupt 0 {
+  45   1        counterD = 0x00;
+  46   1        counterJ = 0x00;
+  47   1      }
+  48          
+  49          // Przerwanie z portu szeregowego - odczyt danych
+  50          void ISR_SERIAL(void) interrupt 4 { 
+  51   1        if (RI == 1) {
+  52   2          if (SBUF == '<') {
+  53   3            clearRcvBuf();
+  54   3          }
+C51 COMPILER V9.60.0.0   MIC2                                                              06/19/2020 01:48:05 PAGE 2   
 
-  55   1        if (RI == 1) {
-  56   2          /*
-  57   2          if (SBUF == '<') {
-  58   2            clearRcvBuf();
-  59   2          }
-  60   2          if (rcvIndex > -1 && rcvIndex < MAX_BUF_SIZE) {
-  61   2            rcvBuf[rcvIndex++] = SBUF;
-  62   2            if (SBUF == '>') {
-  63   2              executeCommand();
-  64   2            }
-  65   2          }
-  66   2        */
-  67   2        }
-  68   1        RI = 0;
-  69   1      } 
-  70          
-  71          /* -----------------PROGRAM GLOWNY----------------- */
-  72          
-  73          void main(void) {
-  74   1      
-  75   1        Init();
-  76   1        
-  77   1        while(TRUE) {
-  78   2          left = NUMBERS[buf[rcvIndex]];
-  79   2          right = NUMBERS[buf[1]];
-  80   2        }
-  81   1      }
-  82          
-  83          /* -----------------CIALA FUNKCJI POMOCNICZYCH----------------- */
-  84          
-  85          // Funkcja sprawdzajaca ktora komenda zostala odebrana
-  86          void executeCommand(void) {
-  87   1        
-  88   1        unsigned char i = 0;
-  89   1        unsigned char bufLength = 0;
-  90   1        unsigned char correctFlag = 1;
-  91   1        
-  92   1        // R_COMMAND1
-  93   1        bufLength = strlen(rcvBuf);
-  94   1        while (i < bufLength && correctFlag == 1) {
-  95   2          if (i == (bufLength - 3)) {
-  96   3            buf[0] = rcvBuf[i];
-  97   3          } else if (i == (bufLength - 2)) {
-  98   3            buf[1] = rcvBuf[i];
-  99   3          } else if (R_COMMAND1[i] == rcvBuf[i]) {
- 100   3            // do nothing
- 101   3          } else {
- 102   3            correctFlag = 0;
- 103   3          }
- 104   2          i++;
- 105   2        }
- 106   1        buf[0] = 1 % 5;
- 107   1        buf[1] = 1 % 10;
- 108   1      }
- 109          
- 110          // Funkcja czysci zawartosc bufora odbiorcy
- 111          void clearRcvBuf(void) {
- 112   1        rcvIndex = 0; 
- 113   1        for (rcvIndex; rcvIndex < sizeof(rcvBuf); rcvIndex++) {
- 114   2          rcvBuf[rcvIndex] = '0';
- 115   2        }
- 116   1        rcvIndex = 0;
-C51 COMPILER V9.60.0.0   MIC2                                                              06/10/2020 01:05:23 PAGE 3   
+  55   2          if (rcvIndex > -1 && rcvIndex < MAX_BUF_SIZE) {
+  56   3            rcvBuf[rcvIndex++] = SBUF;
+  57   3            if (SBUF == '>') {
+  58   4              executeCommand();
+  59   4            }
+  60   3          }
+  61   2        }
+  62   1        RI = 0;
+  63   1      } 
+  64          
+  65          
+  66          /* -----------------PROGRAM GLOWNY----------------- */
+  67          
+  68          void main(void) {
+  69   1      
+  70   1        Init();
+  71   1        
+  72   1        while(TRUE) {
+  73   2          display();
+  74   2        }
+  75   1      }
+  76          
+  77          /* -----------------CIALA FUNKCJI POMOCNICZYCH----------------- */
+  78          
+  79          // Funkcja sprawdzajaca ktora komenda zostala odebrana
+  80          void executeCommand(void) {
+  81   1        
+  82   1        // R_COMMAND1
+  83   1        if ((!strncmp(rcvBuf, R_COMMAND1, 10)) && rcvBuf[12] == '>') {
+  84   2          if (rcvBuf[10] == 0x0A) {
+  85   3            counterJ = 0x00;
+  86   3          } else {
+  87   3            counterJ = rcvBuf[10];
+  88   3          }
+  89   2            
+  90   2          if (rcvBuf[11] == 0x0A) {
+  91   3            counterD = 0x00;
+  92   3          } else {
+  93   3            counterD = rcvBuf[11];
+  94   3          }
+  95   2        }
+  96   1      }
+  97          
+  98          // Funkcja czysci zawartosc bufora odbiorcy
+  99          void clearRcvBuf(void) {
+ 100   1        rcvIndex = 0; 
+ 101   1        for (rcvIndex; rcvIndex < sizeof(rcvBuf); rcvIndex++) {
+ 102   2          rcvBuf[rcvIndex] = 0;
+ 103   2        }
+ 104   1        rcvIndex = 0;
+ 105   1      }
+ 106          
+ 107          // Funkcja wyswietlajaca zawartosc buforow na wyswietlaczu
+ 108          void display(void) {
+ 109   1        unsigned char i = 0;
+ 110   1        for(i; i < 200; i++) {
+ 111   2        
+ 112   2        POWER_LEFT = 1;
+ 113   2        POWER_RIGHT = 1;
+ 114   2        P0 = NUMBERS[counterD];
+ 115   2        POWER_LEFT = 0;
+ 116   2        POWER_LEFT = 1; 
+C51 COMPILER V9.60.0.0   MIC2                                                              06/19/2020 01:48:05 PAGE 3   
 
- 117   1      }
- 118              
- 119          // Funkcja opozniajaca odczytywanie wcisnietych wartosci
- 120          void delay(void) {
- 121   1        int x = 0, y = 0;
- 122   1        for (x; x < X; x++) {
- 123   2          for (y; y < Y; y++) {;}
- 124   2        }
- 125   1      }
- 126          
- 127          // Funkcja wysylajaca dany znak przez magistrale
- 128          void send(unsigned char value) {
- 129   1        SERIAL_MODE = 1;              // tryb nadawania
- 130   1        ES = 0;                       // wylaczenie nasluchu odbierania danych
- 131   1        TI = 0;                       
- 132   1        SBUF = value;                 // zaladuj znak do bufora
- 133   1        while(TI == 0); 
- 134   1        TI = 0;
- 135   1        ES = 1;                       // ponowne wlaczenie nasluchu odbierania danych
- 136   1        SERIAL_MODE = 0;              // tryb odbioru
- 137   1      }
- 138          
- 139          // Funkcja inicjujaca
- 140          void Init(void) {
- 141   1        
- 142   1        // USTAWIENIA OGOLNE
- 143   1        SERIAL_MODE = 0;          // przejdz w tryb odbioru
- 144   1        rcvIndex = 0;             // licznik bufora odbioru na 0
- 145   1        SCON = 0x50;              // konfiguracja portu szeregowego
- 146   1        T2CON = 0x30;             // konfiguracja Timera 2 
- 147   1        RCAP2L = TL2 = 0xDC;      // konfiguracja predkosci nadawania i odbioru 
- 148   1        RCAP2H = TH2 = 0xFF;      // danych przez port szeregowy
- 149   1        TR2 = 1;                  // timer 2 => ON taktowanie portu szeregowego
- 150   1        RI = TI = 0;              // gaszenie flag odbiornika i nadajnika
- 151   1        ES  = 1;                  // wlacz przerwania z portu szeregowego
- 152   1        EX0 = 1;                  // zalacz przerwanie od INT0
- 153   1        IT0 = 1;                  // aktywnosc na zbocze opadajace H --> L
- 154   1        EA  = 1;                  // wlacz maske przerwan
- 155   1        
- 156   1        // USTAWIENIA POZOSTALE
- 157   1        buf[0] = 1;
- 158   1        buf[1] = 2;
- 159   1      }
+ 117   2        P0 = NUMBERS[counterJ];
+ 118   2        POWER_RIGHT = 0;
+ 119   2        POWER_RIGHT = 1;
+ 120   2        }
+ 121   1      }
+ 122          
+ 123          
+ 124          // Funkcja wysylajaca dany znak przez magistrale
+ 125          void send(unsigned char value) {
+ 126   1        SERIAL_MODE = 1;              // tryb nadawania
+ 127   1        ES = 0;                       // wylaczenie nasluchu odbierania danych
+ 128   1        TI = 0;                       
+ 129   1        SBUF = value;                 // zaladuj znak do bufora
+ 130   1        while(TI == 0); 
+ 131   1        TI = 0;
+ 132   1        ES = 1;                       // ponowne wlaczenie nasluchu odbierania danych
+ 133   1        SERIAL_MODE = 0;              // tryb odbioru
+ 134   1      }
+ 135          
+ 136          // Funkcja inicjujaca
+ 137          void Init(void) {
+ 138   1        
+ 139   1        // USTAWIENIA OGOLNE
+ 140   1        SERIAL_MODE = 0;          // przejdz w tryb odbioru
+ 141   1        rcvIndex = 0;             // licznik bufora odbioru na 0
+ 142   1        SCON = 0x50;              // konfiguracja portu szeregowego
+ 143   1        T2CON = 0x30;             // konfiguracja Timera 2 
+ 144   1        RCAP2L = TL2 = 0xDC;      // konfiguracja predkosci nadawania i odbioru 
+ 145   1        RCAP2H = TH2 = 0xFF;      // danych przez port szeregowy
+ 146   1        TR2 = 1;                  // timer 2 => ON taktowanie portu szeregowego
+ 147   1        RI = TI = 0;              // gaszenie flag odbiornika i nadajnika
+ 148   1        ES  = 1;                  // wlacz przerwania z portu szeregowego
+ 149   1        EX0 = 1;                  // zalacz przerwanie od INT0
+ 150   1        IT0 = 1;                  // aktywnosc na zbocze opadajace H --> L
+ 151   1        EA  = 1;                  // wlacz maske przerwan
+ 152   1        
+ 153   1        // USTAWIENIA POZOSTALE
+ 154   1        counterD = 0x00;
+ 155   1        counterJ = 0x00;
+ 156   1        POWER_LEFT = 0;
+ 157   1        POWER_RIGHT = 1;
+ 158   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    250    ----
+   CODE SIZE        =    316    ----
    CONSTANT SIZE    =     25    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     23       2
+   DATA SIZE        =     23    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/10/2020  01:05:19  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/19/2020  01:17:48  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
@@ -25,9 +25,9 @@ LINK MAP OF MODULE:  .\Objects\Microcontroller1 (MIC1)
 
             * * * * * * *   D A T A   M E M O R Y   * * * * * * *
             REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
-            DATA    0008H     0019H     UNIT         ?DT?MIC1
-            DATA    0021H     0001H     UNIT         _DATA_GROUP_
-            IDATA   0022H     0001H     UNIT         ?STACK
+            DATA    0008H     002DH     UNIT         ?DT?MIC1
+            DATA    0035H     0001H     UNIT         _DATA_GROUP_
+            IDATA   0036H     0001H     UNIT         ?STACK
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
@@ -35,18 +35,18 @@ LINK MAP OF MODULE:  .\Objects\Microcontroller1 (MIC1)
             CODE    0023H     0003H     ABSOLUTE     
                     0026H     07DAH                  *** GAP ***
             CODE    0800H     008CH     UNIT         ?C_C51STARTUP
-            CODE    088CH     0047H     UNIT         ?PR?HANDLEPRESSING?MIC1
-            CODE    08D3H     0037H     UNIT         ?PR?UPDATEDISPLAY?MIC1
-            CODE    090AH     002BH     UNIT         ?PR?INIT?MIC1
-            CODE    0935H     0027H     UNIT         ?PR?MAIN?MIC1
-            CODE    095CH     0023H     UNIT         ?PR?DELAY?MIC1
-            CODE    097FH     001FH     UNIT         ?CO?MIC1
-            CODE    099EH     0019H     UNIT         ?C?LIB_CODE
-            CODE    09B7H     0017H     UNIT         ?C_INITSEG
-            CODE    09CEH     0015H     UNIT         ?PR?_STRLEN?STRLEN
-            CODE    09E3H     0013H     UNIT         ?PR?SETDIODE?MIC1
-            CODE    09F6H     0012H     UNIT         ?PR?_SEND?MIC1
-            CODE    0A08H     0001H     UNIT         ?PR?ISR_SERIAL?MIC1
+            CODE    088CH     0065H     UNIT         ?PR?UPDATEDISPLAY?MIC1
+            CODE    08F1H     0047H     UNIT         ?PR?HANDLEPRESSING?MIC1
+            CODE    0938H     002DH     UNIT         ?C_INITSEG
+            CODE    0965H     002BH     UNIT         ?PR?INIT?MIC1
+            CODE    0990H     0027H     UNIT         ?PR?MAIN?MIC1
+            CODE    09B7H     0023H     UNIT         ?PR?DELAY?MIC1
+            CODE    09DAH     001FH     UNIT         ?CO?MIC1
+            CODE    09F9H     0019H     UNIT         ?C?LIB_CODE
+            CODE    0A12H     0015H     UNIT         ?PR?_STRLEN?STRLEN
+            CODE    0A27H     0013H     UNIT         ?PR?SETDIODE?MIC1
+            CODE    0A3AH     0012H     UNIT         ?PR?_SEND?MIC1
+            CODE    0A4CH     0001H     UNIT         ?PR?ISR_SERIAL?MIC1
 
 
 
@@ -59,7 +59,7 @@ SEGMENT                           DATA_GROUP
 ?C_C51STARTUP                   -----    -----
   +--> ?PR?MAIN?MIC1
   +--> ?C_INITSEG
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:19  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 2
 
 
 
@@ -74,7 +74,7 @@ SEGMENT                           DATA_GROUP
 ?PR?HANDLEPRESSING?MIC1         -----    -----
   +--> ?CO?MIC1
 
-?PR?UPDATEDISPLAY?MIC1          0021H    0001H
+?PR?UPDATEDISPLAY?MIC1          0035H    0001H
   +--> ?CO?MIC1
   +--> ?PR?_STRLEN?STRLEN
   +--> ?PR?_SEND?MIC1
@@ -92,161 +92,169 @@ SYMBOL TABLE OF MODULE:  .\Objects\Microcontroller1 (MIC1)
   D:0008H         PUBLIC        diodeFlag
   B:00A8H.7       PUBLIC        EA
   B:0080H.0       PUBLIC        P0_0
-  C:0A08H         PUBLIC        ISR_SERIAL
-  C:095CH         PUBLIC        delay
+  C:0A4CH         PUBLIC        ISR_SERIAL
+  C:09B7H         PUBLIC        delay
   B:00A0H.1       PUBLIC        P2_1
   B:00A0H.2       PUBLIC        P2_2
   B:00A0H.3       PUBLIC        P2_3
-  C:090AH         PUBLIC        Init
+  C:0965H         PUBLIC        Init
   B:00B0H.4       PUBLIC        P3_4
   B:00A8H.4       PUBLIC        ES
   B:00A0H.7       PUBLIC        P2_7
   B:0098H.0       PUBLIC        RI
   B:0098H.1       PUBLIC        TI
-  C:0992H         PUBLIC        NUMBERS
+  C:09EDH         PUBLIC        NUMBERS
   D:00CBH         PUBLIC        RCAP2H
   D:00CAH         PUBLIC        RCAP2L
-  C:0935H         PUBLIC        main
-  C:09F6H         PUBLIC        _send
+  C:0990H         PUBLIC        main
+  C:0A3AH         PUBLIC        _send
   D:0099H         PUBLIC        SBUF
   D:0009H         PUBLIC        tabIndex
   D:0098H         PUBLIC        SCON
-  C:09E3H         PUBLIC        setDiode
+  C:0A27H         PUBLIC        setDiode
   D:000AH         PUBLIC        buf
-  C:088CH         PUBLIC        handlePressing
-  D:000CH         PUBLIC        rcvIndex
-  D:000DH         PUBLIC        RcvBuf
+  C:08F1H         PUBLIC        handlePressing
+  D:000CH         PUBLIC        SndBuf
+  D:0020H         PUBLIC        rcvIndex
+  D:0021H         PUBLIC        RcvBuf
   D:00CDH         PUBLIC        TH2
   D:00CCH         PUBLIC        TL2
-  C:097FH         PUBLIC        B_COMMAND1
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:19  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 3
 
 
+  C:09DAH         PUBLIC        B_COMMAND1
   B:00C8H.2       PUBLIC        TR2
-  C:08D3H         PUBLIC        updateDisplay
-  C:098DH         PUBLIC        R_COMMAND1
+  C:088CH         PUBLIC        updateDisplay
+  C:09E8H         PUBLIC        R_COMMAND1
   D:00C8H         PUBLIC        T2CON
-  C:098EH         PUBLIC        CHECK_LINE
+  C:09E9H         PUBLIC        CHECK_LINE
   -------         PROC          ISR_SERIAL
-  C:0A08H         LINE#         57
-  C:0A08H         LINE#         59
+  C:0A4CH         LINE#         58
+  C:0A4CH         LINE#         60
   -------         ENDPROC       ISR_SERIAL
   -------         PROC          MAIN
-  C:0935H         LINE#         63
-  C:0935H         LINE#         65
-  C:0938H         LINE#         67
-  C:0938H         LINE#         68
-  C:0940H         LINE#         70
-  C:0944H         LINE#         71
-  C:0947H         LINE#         72
-  C:094AH         LINE#         73
-  C:094DH         LINE#         74
-  C:094DH         LINE#         75
-  C:0957H         LINE#         76
-  C:095AH         LINE#         77
+  C:0990H         LINE#         64
+  C:0990H         LINE#         66
+  C:0993H         LINE#         68
+  C:0993H         LINE#         69
+  C:099BH         LINE#         71
+  C:099FH         LINE#         72
+  C:09A2H         LINE#         73
+  C:09A5H         LINE#         74
+  C:09A8H         LINE#         75
+  C:09A8H         LINE#         76
+  C:09B0H         LINE#         77
+  C:09B2H         LINE#         78
+  C:09B2H         LINE#         79
+  C:09B5H         LINE#         80
   -------         ENDPROC       MAIN
   -------         PROC          DELAY
   -------         DO            
   D:0006H         SYMBOL        x
   D:0004H         SYMBOL        y
   -------         ENDDO         
-  C:095CH         LINE#         83
-  C:095CH         LINE#         84
-  C:0961H         LINE#         85
-  C:0961H         LINE#         86
-  C:0973H         LINE#         87
-  C:097EH         LINE#         88
+  C:09B7H         LINE#         86
+  C:09B7H         LINE#         87
+  C:09BCH         LINE#         88
+  C:09BCH         LINE#         89
+  C:09CEH         LINE#         90
+  C:09D9H         LINE#         91
   -------         ENDPROC       DELAY
   -------         PROC          SETDIODE
-  C:09E3H         LINE#         91
-  C:09E3H         LINE#         92
-  C:09EFH         LINE#         93
-  C:09F5H         LINE#         94
+  C:0A27H         LINE#         94
+  C:0A27H         LINE#         95
+  C:0A33H         LINE#         96
+  C:0A39H         LINE#         97
   -------         ENDPROC       SETDIODE
   -------         PROC          HANDLEPRESSING
-  C:088CH         LINE#         97
-  C:088CH         LINE#         100
-  C:0892H         LINE#         103
-  C:0898H         LINE#         104
-  C:089BH         LINE#         105
-  C:089DH         LINE#         106
-  C:089EH         LINE#         109
-  C:089EH         LINE#         110
-  C:08A1H         LINE#         112
-  C:08B3H         LINE#         114
-  C:08C5H         LINE#         116
-  C:08D2H         LINE#         117
-  C:08D2H         LINE#         118
+  C:08F1H         LINE#         100
+  C:08F1H         LINE#         103
+  C:08F7H         LINE#         106
+  C:08FDH         LINE#         107
+  C:0900H         LINE#         108
+  C:0902H         LINE#         109
+  C:0903H         LINE#         112
+  C:0903H         LINE#         113
+  C:0906H         LINE#         115
+  C:0918H         LINE#         117
+  C:092AH         LINE#         119
+  C:0937H         LINE#         120
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 4
+
+
+  C:0937H         LINE#         121
   -------         ENDPROC       HANDLEPRESSING
   -------         PROC          _SEND
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:19  PAGE 4
-
-
   D:0007H         SYMBOL        value
-  C:09F6H         LINE#         121
-  C:09F6H         LINE#         122
-  C:09F8H         LINE#         123
-  C:09FAH         LINE#         124
-  C:09FCH         LINE#         125
-  C:09FEH         LINE#         126
-  C:0A01H         LINE#         127
-  C:0A03H         LINE#         128
-  C:0A05H         LINE#         129
-  C:0A07H         LINE#         130
+  C:0A3AH         LINE#         124
+  C:0A3AH         LINE#         125
+  C:0A3CH         LINE#         126
+  C:0A3EH         LINE#         127
+  C:0A40H         LINE#         128
+  C:0A42H         LINE#         129
+  C:0A45H         LINE#         130
+  C:0A47H         LINE#         131
+  C:0A49H         LINE#         132
+  C:0A4BH         LINE#         133
   -------         ENDPROC       _SEND
   -------         PROC          UPDATEDISPLAY
   -------         DO            
-  D:0021H         SYMBOL        i
+  D:0035H         SYMBOL        i
   D:0006H         SYMBOL        commandLength
   -------         ENDDO         
-  C:08D3H         LINE#         133
-  C:08D3H         LINE#         134
-  C:08D6H         LINE#         135
-  C:08E1H         LINE#         136
-  C:08E7H         LINE#         137
-  C:08EDH         LINE#         138
-  C:08EFH         LINE#         139
-  C:08F7H         LINE#         140
-  C:08F9H         LINE#         141
-  C:08FBH         LINE#         142
-  C:0905H         LINE#         143
-  C:0905H         LINE#         144
-  C:0909H         LINE#         145
+  C:088CH         LINE#         136
+  C:088CH         LINE#         138
+  C:088FH         LINE#         139
+  C:089AH         LINE#         140
+  C:08A0H         LINE#         141
+  C:08AAH         LINE#         142
+  C:08B1H         LINE#         143
+  C:08B7H         LINE#         144
+  C:08BEH         LINE#         145
+  C:08C0H         LINE#         146
+  C:08CEH         LINE#         147
+  C:08CEH         LINE#         148
+  C:08D2H         LINE#         149
+  C:08D5H         LINE#         150
+  C:08DBH         LINE#         151
+  C:08E5H         LINE#         152
+  C:08ECH         LINE#         153
+  C:08F0H         LINE#         154
   -------         ENDPROC       UPDATEDISPLAY
   -------         PROC          INIT
-  C:090AH         LINE#         148
-  C:090AH         LINE#         151
-  C:090CH         LINE#         152
-  C:090FH         LINE#         153
-  C:0912H         LINE#         154
-  C:0918H         LINE#         155
-  C:091EH         LINE#         156
-  C:0921H         LINE#         157
-  C:0925H         LINE#         158
-  C:0927H         LINE#         159
-  C:0929H         LINE#         160
-  C:092BH         LINE#         163
-  C:092DH         LINE#         164
-  C:092FH         LINE#         165
-  C:0932H         LINE#         166
-  C:0934H         LINE#         167
+  C:0965H         LINE#         157
+  C:0965H         LINE#         160
+  C:0967H         LINE#         161
+  C:096AH         LINE#         162
+  C:096DH         LINE#         163
+  C:0973H         LINE#         164
+  C:0979H         LINE#         165
+  C:097CH         LINE#         166
+  C:0980H         LINE#         167
+  C:0982H         LINE#         168
+  C:0984H         LINE#         169
+  C:0986H         LINE#         172
+  C:0988H         LINE#         173
+  C:098AH         LINE#         174
+  C:098DH         LINE#         175
+  C:098FH         LINE#         176
   -------         ENDPROC       INIT
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 5
+
+
   -------         ENDMOD        MIC1
 
   -------         MODULE        STRLEN
-  C:09CEH         PUBLIC        _STRLEN
+  C:0A12H         PUBLIC        _STRLEN
   -------         ENDMOD        STRLEN
 
   -------         MODULE        ?C?CLDPTR
-  C:099EH         PUBLIC        ?C?CLDPTR
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/10/2020  01:05:19  PAGE 5
-
-
+  C:09F9H         PUBLIC        ?C?CLDPTR
   -------         ENDMOD        ?C?CLDPTR
 
 ******************************************************************************
-* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0151H BYTE (16%) *
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0195H BYTE (19%) *
 ******************************************************************************
 
-Program Size: data=35.0 xdata=0 code=527
+Program Size: data=55.0 xdata=0 code=595
 LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

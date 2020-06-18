@@ -4,8 +4,6 @@
 #define TRUE 1
 #define SERIAL_MODE P3_4	// 0 odbiór, 1 nadawanie
 #define MAX_BUF_SIZE 20		// max rozmiar bufora
-#define X 200							// parametry dla funkcji delay
-#define Y 200
 #define POWER_LEFT P2_0
 #define POWER_RIGHT P2_1
 
@@ -25,35 +23,32 @@ unsigned char data rcvIndex;
 
 /* -----------------ZMIENNE/STALE POZOSTALE----------------- */
 
-// Tablica buforow - dla obu wyswietlaczy
-unsigned char data buf[2];
-
 // Tablica cyfr 0 - 9
-unsigned char code NUMBERS[] = {0xBF, 0x86, 0xDB, 0xCF, 0xE6, 0xED, 0xFD, 0x87, 0xFF, 0xEF};
+unsigned char code NUMBERS[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 
-unsigned char xdata right _at_ 0xFD00;
-unsigned char xdata left _at_ 0xFE00;
+
+// Zmienne dla wyswietlanych wartosci
+unsigned char data counterD;
+unsigned char data counterJ;
 	
 /* -----------------FUNKCJE POMOCNICZE----------------- */
 
-extern void executeCommand();
-extern void clearRcvBuf();
-extern void delay();
-extern void send(unsigned char);
-extern void Init();
+void executeCommand();
+void clearRcvBuf();
+void display();
+void send(unsigned char);
+void Init();
 
 /* -----------------PRZERWANIA----------------- */
 
-void ISR_INT0(void) interrupt 0
-  {
-		rcvIndex++;
-  }
+void ISR_INT0(void) interrupt 0 {
+	counterD = 0x00;
+	counterJ = 0x00;
+}
 
 // Przerwanie z portu szeregowego - odczyt danych
 void ISR_SERIAL(void) interrupt 4 { 
-	
 	if (RI == 1) {
-		/*
 		if (SBUF == '<') {
 			clearRcvBuf();
 		}
@@ -63,10 +58,10 @@ void ISR_SERIAL(void) interrupt 4 {
 				executeCommand();
 			}
 		}
-	*/
 	}
 	RI = 0;
 }	
+
 
 /* -----------------PROGRAM GLOWNY----------------- */
 
@@ -75,8 +70,7 @@ void main(void) {
 	Init();
 	
 	while(TRUE) {
-    left = NUMBERS[buf[rcvIndex]];
-		right = NUMBERS[buf[1]];
+		display();
 	}
 }
 
@@ -85,44 +79,46 @@ void main(void) {
 // Funkcja sprawdzajaca ktora komenda zostala odebrana
 void executeCommand(void) {
 	
-	unsigned char i = 0;
-	unsigned char bufLength = 0;
-	unsigned char correctFlag = 1;
-	
 	// R_COMMAND1
-	bufLength = strlen(rcvBuf);
-	while (i < bufLength && correctFlag == 1) {
-		if (i == (bufLength - 3)) {
-			buf[0] = rcvBuf[i];
-		} else if (i == (bufLength - 2)) {
-			buf[1] = rcvBuf[i];
-		} else if (R_COMMAND1[i] == rcvBuf[i]) {
-			// do nothing
+	if ((!strncmp(rcvBuf, R_COMMAND1, 10)) && rcvBuf[12] == '>') {
+		if (rcvBuf[10] == 0x0A) {
+			counterJ = 0x00;
 		} else {
-			correctFlag = 0;
+			counterJ = rcvBuf[10];
 		}
-		i++;
+			
+		if (rcvBuf[11] == 0x0A) {
+			counterD = 0x00;
+		} else {
+			counterD = rcvBuf[11];
+		}
 	}
-	buf[0] = 1 % 5;
-	buf[1] = 1 % 10;
 }
 
 // Funkcja czysci zawartosc bufora odbiorcy
 void clearRcvBuf(void) {
 	rcvIndex = 0; 
 	for (rcvIndex; rcvIndex < sizeof(rcvBuf); rcvIndex++) {
-		rcvBuf[rcvIndex] = '0';
+		rcvBuf[rcvIndex] = 0;
 	}
 	rcvIndex = 0;
 }
-		
-// Funkcja opozniajaca odczytywanie wcisnietych wartosci
-void delay(void) {
-	int x = 0, y = 0;
-	for (x; x < X; x++) {
-		for (y; y < Y; y++) {;}
+
+// Funkcja wyswietlajaca zawartosc buforow na wyswietlaczu
+void display(void) {
+	unsigned char i = 0;
+	for(i; i < 200; i++) {	
+		POWER_LEFT = 1;
+		POWER_RIGHT = 1;
+		P0 = NUMBERS[counterD];
+		POWER_LEFT = 0;
+		POWER_LEFT = 1;	
+		P0 = NUMBERS[counterJ];
+		POWER_RIGHT = 0;
+		POWER_RIGHT = 1;
 	}
 }
+
 
 // Funkcja wysylajaca dany znak przez magistrale
 void send(unsigned char value) {
@@ -154,6 +150,8 @@ void Init(void) {
 	EA  = 1; 									// wlacz maske przerwan
 	
 	// USTAWIENIA POZOSTALE
-	buf[0] = 1;
-	buf[1] = 2;
+	counterD = 0x00;
+	counterJ = 0x00;
+	POWER_LEFT = 0;
+	POWER_RIGHT = 1;
 }

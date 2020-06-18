@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/10/2020  01:05:20  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/19/2020  01:17:48  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
@@ -11,6 +11,8 @@ MEMORY MODEL: SMALL
 
 INPUT MODULES INCLUDED:
   .\Objects\mic3.obj (MIC3)
+  C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\PROGRAM FILES (X86)\KEIL\C51\LIB\C51S.LIB (?C_INIT)
 
 
 LINK MAP OF MODULE:  .\Objects\Microcontroller3 (MIC3)
@@ -18,6 +20,26 @@ LINK MAP OF MODULE:  .\Objects\Microcontroller3 (MIC3)
 
             TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
             -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0015H     UNIT         ?DT?MIC3
+            IDATA   001DH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0020H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+                    0026H     07DAH                  *** GAP ***
+            CODE    0800H     008CH     UNIT         ?C_C51STARTUP
+            CODE    088CH     0023H     UNIT         ?PR?DELAY?MIC3
+            CODE    08AFH     0022H     UNIT         ?PR?INIT?MIC3
+            CODE    08D1H     0017H     UNIT         ?C_INITSEG
+            CODE    08E8H     0012H     UNIT         ?PR?_SEND?MIC3
+            CODE    08FAH     000FH     UNIT         ?CO?MIC3
+            CODE    0909H     0008H     UNIT         ?PR?ISR_SERIAL?MIC3
+            CODE    0911H     0005H     UNIT         ?PR?MAIN?MIC3
+            CODE    0916H     0001H     UNIT         ?PR?HANDLEPRESSING?MIC3
 
 
 
@@ -27,22 +49,126 @@ OVERLAY MAP OF MODULE:   .\Objects\Microcontroller3 (MIC3)
 SEGMENT
   +--> CALLED SEGMENT
 ---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MIC3
+  +--> ?C_INITSEG
+
+?PR?MAIN?MIC3
+  +--> ?PR?INIT?MIC3
+
 
 
 SYMBOL TABLE OF MODULE:  .\Objects\Microcontroller3 (MIC3)
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 2
+
+
 
   VALUE           TYPE          NAME
   ----------------------------------
 
   -------         MODULE        MIC3
   C:0000H         SYMBOL        _ICE_DUMMY_
+  B:00A8H.7       PUBLIC        EA
+  B:0090H.0       PUBLIC        P1_0
+  C:0909H         PUBLIC        ISR_SERIAL
+  C:088CH         PUBLIC        delay
+  C:08AFH         PUBLIC        Init
+  B:00B0H.4       PUBLIC        P3_4
+  B:00A8H.4       PUBLIC        ES
+  B:0098H.0       PUBLIC        RI
+  B:0098H.1       PUBLIC        TI
+  D:00CBH         PUBLIC        RCAP2H
+  D:00CAH         PUBLIC        RCAP2L
+  C:0911H         PUBLIC        main
+  C:08E8H         PUBLIC        _send
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  C:0916H         PUBLIC        handlePressing
+  D:0008H         PUBLIC        rcvIndex
+  D:0009H         PUBLIC        RcvBuf
+  D:00CDH         PUBLIC        TH2
+  D:00CCH         PUBLIC        TL2
+  C:08FAH         PUBLIC        B_COMMAND1
+  B:00C8H.2       PUBLIC        TR2
+  C:0908H         PUBLIC        R_COMMAND1
+  D:00C8H         PUBLIC        T2CON
+  -------         PROC          ISR_SERIAL
+  C:0909H         LINE#         37
+  C:0909H         LINE#         38
+  C:090CH         LINE#         39
+  C:090EH         LINE#         40
+  C:090EH         LINE#         41
+  C:0910H         LINE#         42
+  -------         ENDPROC       ISR_SERIAL
+  -------         PROC          MAIN
+  C:0911H         LINE#         46
+  C:0911H         LINE#         48
+  C:0914H         LINE#         50
+  C:0914H         LINE#         52
+  -------         ENDPROC       MAIN
+  -------         PROC          DELAY
+  -------         DO            
+  D:0006H         SYMBOL        x
+  D:0004H         SYMBOL        y
+  -------         ENDDO         
+  C:088CH         LINE#         58
+  C:088CH         LINE#         59
+  C:0891H         LINE#         60
+  C:0891H         LINE#         61
+  C:08A3H         LINE#         62
+  C:08AEH         LINE#         63
+  -------         ENDPROC       DELAY
+  -------         PROC          HANDLEPRESSING
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 3
+
+
+  C:0916H         LINE#         67
+  C:0916H         LINE#         69
+  -------         ENDPROC       HANDLEPRESSING
+  -------         PROC          _SEND
+  D:0007H         SYMBOL        value
+  C:08E8H         LINE#         72
+  C:08E8H         LINE#         73
+  C:08EAH         LINE#         74
+  C:08ECH         LINE#         75
+  C:08EEH         LINE#         76
+  C:08F0H         LINE#         77
+  C:08F3H         LINE#         78
+  C:08F5H         LINE#         79
+  C:08F7H         LINE#         80
+  C:08F9H         LINE#         81
+  -------         ENDPROC       _SEND
+  -------         PROC          INIT
+  C:08AFH         LINE#         85
+  C:08AFH         LINE#         88
+  C:08B1H         LINE#         89
+  C:08B4H         LINE#         90
+  C:08B7H         LINE#         91
+  C:08BDH         LINE#         92
+  C:08C3H         LINE#         93
+  C:08C6H         LINE#         94
+  C:08CAH         LINE#         95
+  C:08CCH         LINE#         96
+  C:08CEH         LINE#         97
+  C:08D0H         LINE#         101
+  -------         ENDPROC       INIT
   -------         ENDMOD        MIC3
 
-*** WARNING L10: CANNOT DETERMINE ROOT SEGMENT
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DELAY?MIC3
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?HANDLEPRESSING?MIC3
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_SEND?MIC3
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?CO?MIC3
 
 ******************************************************************************
-* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0000H BYTE ( 0%) *
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 008DH BYTE ( 6%) *
 ******************************************************************************
 
-Program Size: data=0.0 xdata=0 code=0
-LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)
+Program Size: data=30.0 xdata=0 code=285
+LINK/LOCATE RUN COMPLETE.  4 WARNING(S),  0 ERROR(S)

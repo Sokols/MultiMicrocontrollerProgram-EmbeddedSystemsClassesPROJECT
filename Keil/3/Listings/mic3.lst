@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MIC3                                                              06/09/2020 17:33:09 PAGE 1   
+C51 COMPILER V9.60.0.0   MIC3                                                              06/15/2020 18:35:15 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MIC3
@@ -9,14 +9,116 @@ COMPILER INVOKED BY: C:\Program Files (x86)\Keil\C51\BIN\C51.EXE mic3.c OPTIMIZE
 line level    source
 
    1          #include <REGX52.H>
+   2          #include <string.h>
+   3          
+   4          #define TRUE 1
+   5          #define SERIAL_MODE P3_4  // 0 odbiór, 1 nadawanie
+   6          #define MAX_BUF_SIZE 20   // max rozmiar bufora
+   7          #define X 500             // parametry dla funkcji delay
+   8          #define Y 500
+   9          
+  10          /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
+  11          
+  12          // Komendy nadajace
+  13          unsigned char code B_COMMAND1[] = "<2_display12>";
+  14          
+  15          // Komendy odbierane
+  16          unsigned char code R_COMMAND1[] = "";
+  17          
+  18          // Bufor odbioru
+  19          unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};  
+  20          
+  21          // Licznik dla RcvBuf
+  22          unsigned char data rcvIndex;
+  23          
+  24          /* -----------------ZMIENNE/STALE POZOSTALE----------------- */
+  25          
+  26          
+  27              
+  28          /* -----------------FUNKCJE POMOCNICZE----------------- */
+  29              
+  30          extern void delay();
+  31          extern void send(unsigned char);
+  32          extern void Init();
+  33          
+  34          /* -----------------PRZERWANIA----------------- */
+  35          
+  36          // Przerwanie z portu szeregowego - odczyt danych
+  37          void ISR_SERIAL(void) interrupt 4 { 
+  38   1        if (RI == 1) {  
+  39   2          P1_0 = 0;       
+  40   2        }
+  41   1        RI = 0;
+  42   1      } 
+  43          
+  44          /* -----------------PROGRAM GLOWNY----------------- */
+  45          
+  46          void main(void) {
+  47   1      
+  48   1        Init();
+  49   1        
+  50   1        while(TRUE) {
+  51   2          ;
+  52   2        }
+  53   1      }
+  54          
+C51 COMPILER V9.60.0.0   MIC3                                                              06/15/2020 18:35:15 PAGE 2   
+
+  55          /* -----------------CIALA FUNKCJI POMOCNICZYCH----------------- */
+  56              
+  57          // Funkcja opozniajaca odczytywanie wcisnietych wartosci
+  58          void delay(void) {
+  59   1        int x = 0, y = 0;
+  60   1        for (x; x < X; x++) {
+  61   2          for (y; y < Y; y++) {;}
+  62   2        }
+  63   1      }
+  64          
+  65          
+  66          // Funkcja aktualizujaca bufory po wykryciu wcisniecia przycisku
+  67          void handlePressing(void) {
+  68   1      
+  69   1      }
+  70          
+  71          // Funkcja wysylajaca dany znak przez magistrale
+  72          void send(unsigned char value) {
+  73   1        SERIAL_MODE = 1;              // tryb nadawania
+  74   1        ES = 0;                       // wylaczenie nasluchu odbierania danych
+  75   1        TI = 0;                       
+  76   1        SBUF = value;                 // zaladuj znak do bufora
+  77   1        while(TI == 0); 
+  78   1        TI = 0;
+  79   1        ES = 1;                       // ponowne wlaczenie nasluchu odbierania danych
+  80   1        SERIAL_MODE = 0;              // tryb odbioru
+  81   1      }
+  82          
+  83          
+  84          // Funkcja inicjujaca
+  85          void Init(void) {
+  86   1        
+  87   1        // USTAWIENIA OGOLNE
+  88   1        SERIAL_MODE = 0;          // przejdz w tryb odbioru
+  89   1        rcvIndex = 0;             // licznik bufora odbioru na 0
+  90   1        SCON = 0x50;              // konfiguracja portu szeregowego
+  91   1        RCAP2L = TL2 = 0xDC;      // konfiguracja predkosci nadawania i odbioru 
+  92   1        RCAP2H = TH2 = 0xFF;      // danych przez port szeregowy
+  93   1        T2CON = 0x30;             // konfiguracja Timera 2 
+  94   1        RI = TI = 0;              // gaszenie flag odbiornika i nadajnika
+  95   1        ES  = 1;                  // wlacz przerwania z portu szeregowego
+  96   1        EA  = 1;                  // wlacz maske przerwan
+  97   1        TR2 = 1;                  // timer 2 => ON taktowanie portu szeregowego
+  98   1        
+  99   1        // USTAWIENIA POZOSTALE
+ 100   1      
+ 101   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   ----    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =    101    ----
+   CONSTANT SIZE    =     15    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
+   DATA SIZE        =     21    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
