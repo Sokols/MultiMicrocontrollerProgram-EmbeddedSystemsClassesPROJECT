@@ -10,13 +10,14 @@
 /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
 
 // Komendy nadajace
-unsigned char code B_COMMAND1[] = "";
+unsigned char code S_COMMAND1[] = "<3_display&*>";
 
 // Komendy odbierane
 unsigned char code R_COMMAND1[] = "<2_display12>";
 
 // Bufor odbioru
 unsigned char data rcvBuf[MAX_BUF_SIZE] = {0};	
+unsigned char data sndBuf[MAX_BUF_SIZE] = {0};
 
 // Licznik dla RcvBuf
 unsigned char data rcvIndex;
@@ -42,8 +43,22 @@ void Init();
 /* -----------------PRZERWANIA----------------- */
 
 void ISR_INT0(void) interrupt 0 {
-	counterD = 0x00;
-	counterJ = 0x00;
+	unsigned char i = 0;
+	unsigned char commandLength = strlen(S_COMMAND1);
+	for (i; i < commandLength; i++) {
+		if (S_COMMAND1[i] == '&') {
+			sndBuf[i] = counterD;
+		} else if (S_COMMAND1[i] == '*') {
+			sndBuf[i] = counterJ;
+		} else {
+			sndBuf[i] = S_COMMAND1[i];
+		}
+	}
+	i = 0;
+	for (i; i < commandLength; i++) {
+		send(sndBuf[i]);
+		sndBuf[i] = 0;
+	}
 }
 
 // Przerwanie z portu szeregowego - odczyt danych

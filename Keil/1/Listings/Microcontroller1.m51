@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/19/2020  01:17:48  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    06/19/2020  12:24:55  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
@@ -59,7 +59,7 @@ SEGMENT                           DATA_GROUP
 ?C_C51STARTUP                   -----    -----
   +--> ?PR?MAIN?MIC1
   +--> ?C_INITSEG
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  12:24:55  PAGE 2
 
 
 
@@ -114,20 +114,20 @@ SYMBOL TABLE OF MODULE:  .\Objects\Microcontroller1 (MIC1)
   C:0A27H         PUBLIC        setDiode
   D:000AH         PUBLIC        buf
   C:08F1H         PUBLIC        handlePressing
-  D:000CH         PUBLIC        SndBuf
-  D:0020H         PUBLIC        rcvIndex
-  D:0021H         PUBLIC        RcvBuf
+  D:000CH         PUBLIC        rcvIndex
   D:00CDH         PUBLIC        TH2
   D:00CCH         PUBLIC        TL2
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 3
-
-
-  C:09DAH         PUBLIC        B_COMMAND1
   B:00C8H.2       PUBLIC        TR2
   C:088CH         PUBLIC        updateDisplay
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  12:24:55  PAGE 3
+
+
+  D:000DH         PUBLIC        sndBuf
   C:09E8H         PUBLIC        R_COMMAND1
+  C:09DAH         PUBLIC        S_COMMAND1
   D:00C8H         PUBLIC        T2CON
   C:09E9H         PUBLIC        CHECK_LINE
+  D:0021H         PUBLIC        rcvBuf
   -------         PROC          ISR_SERIAL
   C:0A4CH         LINE#         58
   C:0A4CH         LINE#         60
@@ -179,7 +179,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Microcontroller1 (MIC1)
   C:0918H         LINE#         117
   C:092AH         LINE#         119
   C:0937H         LINE#         120
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  12:24:55  PAGE 4
 
 
   C:0937H         LINE#         121
@@ -239,7 +239,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Microcontroller1 (MIC1)
   C:098DH         LINE#         175
   C:098FH         LINE#         176
   -------         ENDPROC       INIT
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  01:17:48  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  06/19/2020  12:24:55  PAGE 5
 
 
   -------         ENDMOD        MIC1

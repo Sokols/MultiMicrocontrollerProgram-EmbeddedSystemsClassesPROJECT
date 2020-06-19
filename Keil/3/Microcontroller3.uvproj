@@ -381,6 +381,16 @@
               <FileType>1</FileType>
               <FilePath>.\mic3.c</FilePath>
             </File>
+            <File>
+              <FileName>LCD.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\LCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>wait1.a51</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\wait1.a51</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

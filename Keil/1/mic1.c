@@ -10,14 +10,14 @@
 /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
 
 // Komendy nadajace
-unsigned char code B_COMMAND1[] = "<2_display&*>";
+unsigned char code S_COMMAND1[] = "<2_display&*>";
 
 // Komendy odbierane
 unsigned char code R_COMMAND1[] = "";
 
 // Bufor odbioru i nadawania
-unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};
-unsigned char data SndBuf[MAX_BUF_SIZE] = {0};
+unsigned char data rcvBuf[MAX_BUF_SIZE] = {0};
+unsigned char data sndBuf[MAX_BUF_SIZE] = {0};
 
 // Licznik dla RcvBuf
 unsigned char data rcvIndex;
@@ -136,20 +136,20 @@ void send(unsigned char value) {
 void updateDisplay(void) {
 
 	unsigned char i = 0;
-	unsigned char commandLength = strlen(B_COMMAND1);
+	unsigned char commandLength = strlen(S_COMMAND1);
 	for (i; i < commandLength; i++) {
-		if (B_COMMAND1[i] == '&') {
-			SndBuf[i] = buf[0];
-		} else if (B_COMMAND1[i] == '*') {
-			SndBuf[i] = buf[1];
+		if (S_COMMAND1[i] == '&') {
+			sndBuf[i] = buf[0];
+		} else if (S_COMMAND1[i] == '*') {
+			sndBuf[i] = buf[1];
 		} else {
-			SndBuf[i] = B_COMMAND1[i];
+			sndBuf[i] = S_COMMAND1[i];
 		}
 	}
 	i = 0;
 	for (i; i < commandLength; i++) {
-		send(SndBuf[i]);
-		SndBuf[i] = 0;
+		send(sndBuf[i]);
+		sndBuf[i] = 0;
 	}
 }
 

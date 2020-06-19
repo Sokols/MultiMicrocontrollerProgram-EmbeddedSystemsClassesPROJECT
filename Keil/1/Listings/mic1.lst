@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 01:12:11 PAGE 1   
+C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 12:01:45 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MIC1
@@ -20,14 +20,14 @@ line level    source
   10          /* -----------------ZMIENNE/STALE KOMUNIKACJI----------------- */
   11          
   12          // Komendy nadajace
-  13          unsigned char code B_COMMAND1[] = "<2_display&*>";
+  13          unsigned char code S_COMMAND1[] = "<2_display&*>";
   14          
   15          // Komendy odbierane
   16          unsigned char code R_COMMAND1[] = "";
   17          
   18          // Bufor odbioru i nadawania
-  19          unsigned char data RcvBuf[MAX_BUF_SIZE] = {0};
-  20          unsigned char data SndBuf[MAX_BUF_SIZE] = {0};
+  19          unsigned char data rcvBuf[MAX_BUF_SIZE] = {0};
+  20          unsigned char data sndBuf[MAX_BUF_SIZE] = {0};
   21          
   22          // Licznik dla RcvBuf
   23          unsigned char data rcvIndex;
@@ -62,7 +62,7 @@ line level    source
   52          void updateDisplay();
   53          void Init();
   54          
-C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 01:12:11 PAGE 2   
+C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 12:01:45 PAGE 2   
 
   55          /* -----------------PRZERWANIA----------------- */
   56          
@@ -126,7 +126,7 @@ line level    source
  114   2          // przypisanie cyfry z 1. kolumny
  115   2          if (P2_3 == 0) { buf[0] = NUMBERS[tabIndex][0]; }
  116   2          // przypisanie cyfry z 2. kolumny
-C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 01:12:11 PAGE 3   
+C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 12:01:45 PAGE 3   
 
  117   2          else if (P2_2 == 0) { buf[0] = NUMBERS[tabIndex][1]; }
  118   2          // przypisanie cyfry z 3. kolumny
@@ -150,20 +150,20 @@ line level    source
  136          void updateDisplay(void) {
  137   1      
  138   1        unsigned char i = 0;
- 139   1        unsigned char commandLength = strlen(B_COMMAND1);
+ 139   1        unsigned char commandLength = strlen(S_COMMAND1);
  140   1        for (i; i < commandLength; i++) {
- 141   2          if (B_COMMAND1[i] == '&') {
- 142   3            SndBuf[i] = buf[0];
- 143   3          } else if (B_COMMAND1[i] == '*') {
- 144   3            SndBuf[i] = buf[1];
+ 141   2          if (S_COMMAND1[i] == '&') {
+ 142   3            sndBuf[i] = buf[0];
+ 143   3          } else if (S_COMMAND1[i] == '*') {
+ 144   3            sndBuf[i] = buf[1];
  145   3          } else {
- 146   3            SndBuf[i] = B_COMMAND1[i];
+ 146   3            sndBuf[i] = S_COMMAND1[i];
  147   3          }
  148   2        }
  149   1        i = 0;
  150   1        for (i; i < commandLength; i++) {
- 151   2          send(SndBuf[i]);
- 152   2          SndBuf[i] = 0;
+ 151   2          send(sndBuf[i]);
+ 152   2          sndBuf[i] = 0;
  153   2        }
  154   1      }
  155          
@@ -190,7 +190,7 @@ line level    source
  176   1      }
 
 
-C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 01:12:11 PAGE 4   
+C51 COMPILER V9.60.0.0   MIC1                                                              06/19/2020 12:01:45 PAGE 4   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    327    ----

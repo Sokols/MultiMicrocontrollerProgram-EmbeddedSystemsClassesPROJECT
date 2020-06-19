@@ -1,3 +1,5 @@
-".\Objects\mic3.obj" 
+".\Objects\mic3.obj",
+".\Objects\LCD.obj",
+".\Objects\wait1.obj" 
 TO ".\Objects\Microcontroller3" 
 PRINT(".\Listings\Microcontroller3.m51") CODE( 0X0000-0X0FFF )
